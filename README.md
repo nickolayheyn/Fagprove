@@ -1,4 +1,4 @@
-# Fagprove
+# Fagprøve
  
 # Brukerveiledning:
 
