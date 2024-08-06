@@ -21,7 +21,10 @@ Kjør list_interfaces.py og noter ned ID-en for nettverket som skal brukes.
 Python-scriptene kan kjøres direkte fra VSCode eller i CMD med:
 python list_interfaces / script.py
 
-
-
 # Drift:
+
+Følg alle de samme stegene skrevet i # Helpdesk.
+For å oppdatere og hente nyeste versjon av programmet kan du kjøre:
+git pull origin main
+
 
