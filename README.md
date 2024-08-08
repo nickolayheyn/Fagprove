@@ -27,4 +27,8 @@ Følg alle de samme stegene skrevet i # Helpdesk.
 For å oppdatere og hente nyeste versjon av programmet kan du kjøre:
 git pull origin main
 
+For å gjøre programmet kjørbart kan du bruke:
+pyinstaller --onefile scan.py
+
+
 
