@@ -1,6 +1,7 @@
 from scapy.all import ARP, Ether, srp
 import requests
 import sqlite3
+import time
 
 # Funksjon for å skanne nettverket og finne tilkoblede enheter
 def scan(ip_range):
@@ -27,34 +28,37 @@ def display_devices(devices):
         return  # Avslutt funksjonen hvis ingen enheter ble funnet
 
     # Hvis det er enheter, skriv dem ut
-    print("Available devices in the network:")
-    print("IP Address\t\tMAC Address\t\Leverandør")
+    print("Tilgjengelige enheter i nettverket:")
+    print("IP-adresse\t\tMAC-adresse\t\tLeverandør")
     print("------------------------------------------------------")
     for device in devices:
-        print(f"{device['ip']}\t{device['mac']}\t{device.get('leverandør', 'Unknown')}")
+        print(f"{device['ip']}\t{device['mac']}\t{device.get('vendor', 'Ukjent')}")
 
 # Funksjon for å hente leverandørinformasjon basert på MAC-adresse
 def get_vendor(mac_address):
     url = f"https://api.macvendors.com/{mac_address}"
-    response = requests.get(url)
-    
-    if response.status_code == 200:
-        return response.text.strip()  # Fjerner eventuelle ekstra mellomrom/linjer
-    else:
-        return "Unknown"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.text.strip()
+        else:
+            return "Ukjent"
+    except requests.exceptions.RequestException as e:
+        print(f"Feil ved innhenting av leverandør for {mac_address}: {e}")
+        return "Ukjent"
 
 # Funksjon for å lagre enhetsinformasjon til en SQLite-database
 def save_to_database(devices):
     # Koble til SQLite-databasen (eller opprett den hvis den ikke finnes)
-    conn = sqlite3.connect('sqlite.db')
+    conn = sqlite3.connect('sqllite.db')
     cursor = conn.cursor()
     
     # Sett inn enhetsdata i databasen
     for device in devices:
         cursor.execute('''
-            INSERT INTO devices (mac_adresse, leverandør)
-            VALUES (?, ?)
-        ''', (device['mac'], device['vendor']))
+            INSERT INTO devices (ip_adresse, mac_adresse, leverandør)
+            VALUES (?, ?, ?)
+        ''', (device['ip'], device['mac'], device['vendor']))
     
     # Bekreft endringene og lukk tilkoblingen
     conn.commit()
@@ -75,6 +79,7 @@ if __name__ == "__main__":
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS devices (
         id INTEGER PRIMARY KEY AUTOINCREMENT,  
+        ip_adresse TEXT NOT NULL,
         mac_adresse TEXT NOT NULL,
         leverandør TEXT
     )
@@ -97,5 +102,6 @@ if __name__ == "__main__":
     
     save_to_database(devices)
     
-    # Hold vinduet åpent til brukeren trykker en tast
-    input("\nTrykk Enter for å lukke programmet...")
+    # Keep the program running until Enter is pressed
+    print("\nTrykk Enter for å lukke programmet...")
+    input()
