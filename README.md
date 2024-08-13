@@ -39,4 +39,5 @@ For å gjøre programmet kjørbart kan du bruke:
 pyinstaller --onefile scan.py
 
 
+![flowchart](https://github.com/user-attachments/assets/fcc1c5cf-ba6b-436e-ad4a-907c5c7de395)
 
